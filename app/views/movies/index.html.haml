@@ -13,9 +13,9 @@
 %table#movies
   %thead
     %tr
-      %th#title_header{ class:[ (:hilite if @htitle) ] }=  link_to 'Movie Title', sort_by_title_movies_path( :gato => "perro" )
-      %th#rating_header{ class:[ (:hilite if @hrating) ] }=  link_to 'Movie Rating', sort_by_rating_movies_path
-      %th#release_date_header{ class:[ (:hilite if @hrelease) ] }=  link_to 'Relese Date', sort_by_release_movies_path
+      %th{ class:[ (:hilite if @htitle) ] }=    link_to 'Movie Title',  movies_path(:sort_by => :title),        :id => :title_header
+      %th{ class:[ (:hilite if @hrating) ] }=   link_to 'Movie Rating', movies_path(:sort_by => :rating),       :id => :rating_header
+      %th{ class:[ (:hilite if @hrelease) ] }=  link_to 'Relese Date',  movies_path(:sort_by => :release_date), :id => :release_date_header
       %th More Info
   %tbody
     - @movies.each do |movie|

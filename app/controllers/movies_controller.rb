@@ -17,17 +17,30 @@ class MoviesController < ApplicationController
       @movies << Movie.where( rating: rating).to_a
     end
     @movies.flatten!
+    unless params[ :sort_by ].nil?
+      sort_collection
+    end
+  end
+  
+  def sort_collection
+    v = params[:sort_by].to_s
+    class_selector = "@h" + v + " = true"
+    eval(class_selector)
+    @movies = @movies.sort{ |f, s| eval("f.#{v}") <=> eval("s.#{v}") }
   end
   
   def populate_checked_ratings
-    if params[ :ratings ].nil?
+    if( params[ :ratings ].nil? and session[ :ratings ].nil? )
       @checked_ratings = {}
       Movie.all_ratings.each do |rating|
         @checked_ratings[rating] = 1
       end
-    else
+    elsif !params[ :ratings ].nil?
       @checked_ratings = params[:ratings] 
+    else
+      @checked_ratings = session[ :ratings ]
     end
+    session[ :ratings ] = @checked_ratings
   end
 
   def new
@@ -56,23 +69,5 @@ class MoviesController < ApplicationController
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
-  end
-  
-  def sort_by_title
-    @movies = Movie.order(:title)
-    @htitle = true
-    render action: "index"
-  end
-  
-  def sort_by_rating
-    @movies = Movie.order(:rating)
-    @hrating = true
-    render action: "index"
-  end
-  
-  def sort_by_release
-    @movies = Movie.order(:release_date)
-    @hrelease = true
-    render action: "index"
   end
 end
