@@ -11,16 +11,23 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:ratings].nil?
-      @movies ||= Movie.all
-    else
-      @movies = []
-      params[:ratings].each do |rating|
-        @movies << Movie.where( rating: rating).to_a
-      end
-      @movies.flatten!
+    populate_checked_ratings
+    @movies = []
+    @checked_ratings.each do |rating|
+      @movies << Movie.where( rating: rating).to_a
     end
-    @checked_ratings = ( params[:ratings].nil? ? {} : params[:ratings] )
+    @movies.flatten!
+  end
+  
+  def populate_checked_ratings
+    if params[ :ratings ].nil?
+      @checked_ratings = {}
+      Movie.all_ratings.each do |rating|
+        @checked_ratings[rating] = 1
+      end
+    else
+      @checked_ratings = params[:ratings] 
+    end
   end
 
   def new
